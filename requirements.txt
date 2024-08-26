@@ -7,3 +7,4 @@ Werkzeug==2.2.3
 Flask-Migrate==4.0.4
 reportlab==3.6.12
 gunicorn==20.1.0
+email_validator
