@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - AI Readiness Assessment{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Hello, {{ current_user.email }}! Here you can manage your AI Readiness Assessment.</h1>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Start New Assessment</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Begin a new AI Readiness Assessment to evaluate your organization's current state.</p>
+                <a href="{{ url_for('start_assessment') }}" class="btn btn-primary">Start Assessment</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Previous Assessments</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">View and compare your previous AI Readiness Assessment results.</p>
+                <a href="#" class="btn btn-secondary">View History</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">AI Readiness Overview</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Your AI Readiness is assessed across four key areas:</p>
+                <ul>
+                    <li>Strategy</li>
+                    <li>Governance</li>
+                    <li>Data & Infrastructure</li>
+                    <li>Organization (Talent & Culture)</li>
+                </ul>
+                <p>Complete an assessment to see your scores and recommendations in these areas.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

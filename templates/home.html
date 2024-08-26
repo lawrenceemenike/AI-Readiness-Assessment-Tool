@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Welcome to AI Readiness Assessment</h1>
+    <p class="lead">This tool helps organizations evaluate their readiness to adopt AI technologies. By assessing key areas such as strategy, governance, data & infrastructure, and organizational talent & culture, we provide a comprehensive analysis of your AI capabilities and identify areas for improvement.</p>
+    <hr class="my-4">
+    {% if current_user.is_authenticated %}
+        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">Go to Dashboard</a>
+    {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started</a>
+        <a href="{{ url_for('login') }}" class="btn btn-secondary btn-lg">Login</a>
+    {% endif %}
+</div>
+{% endblock %}

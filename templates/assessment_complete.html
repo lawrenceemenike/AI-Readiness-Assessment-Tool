@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+
+{% block title %}Assessment Complete - AI Readiness Assessment{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Assessment Complete</h2>
+<p>Thank you for completing the AI Readiness Assessment.</p>
+
+<div class="row">
+    <div class="col-md-6">
+        <h3>Your Results:</h3>
+        <ul>
+            <li>Strategy Score: {{ assessment.strategy_score }}</li>
+            <li>Governance Score: {{ assessment.governance_score }}</li>
+            <li>Data & Infrastructure Score: {{ assessment.data_infrastructure_score }}</li>
+            <li>Organization Score: {{ assessment.organization_score }}</li>
+        </ul>
+        <h4>Total Score: {{ assessment.total_score }}</h4>
+        <h4>Readiness Level: {{ assessment.readiness_level }}</h4>
+    </div>
+    <div class="col-md-6">
+        <canvas id="radarChart"></canvas>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <canvas id="barChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <h3>Gap Analysis</h3>
+        <div id="gapAnalysis"></div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <h3>Recommendations</h3>
+        <div id="recommendations"></div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <a href="{{ url_for('generate_pdf', assessment_id=assessment.id) }}" class="btn btn-primary">Download PDF Report</a>
+    </div>
+</div>
+
+<a href="{{ url_for('dashboard') }}" class="btn btn-primary mt-3">Return to Dashboard</a>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        // Radar Chart
+        const radarCtx = document.getElementById('radarChart').getContext('2d');
+        new Chart(radarCtx, {
+            type: 'radar',
+            data: {
+                labels: ['Strategy', 'Governance', 'Data & Infrastructure', 'Organization'],
+                datasets: [{
+                    label: 'Your Scores',
+                    data: [
+                        {{ assessment.strategy_score }},
+                        {{ assessment.governance_score }},
+                        {{ assessment.data_infrastructure_score }},
+                        {{ assessment.organization_score }}
+                    ],
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    pointBackgroundColor: 'rgb(54, 162, 235)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgb(54, 162, 235)'
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: false
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 20
+                    }
+                }
+            }
+        });
+
+        // Bar Chart
+        const barCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Strategy', 'Governance', 'Data & Infrastructure', 'Organization'],
+                datasets: [{
+                    label: 'Scores',
+                    data: [
+                        {{ assessment.strategy_score }},
+                        {{ assessment.governance_score }},
+                        {{ assessment.data_infrastructure_score }},
+                        {{ assessment.organization_score }}
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 20
+                    }
+                }
+            }
+        });
+
+        // Gap Analysis
+        const gapAnalysis = document.getElementById('gapAnalysis');
+        const scores = [
+            { category: 'Strategy', score: {{ assessment.strategy_score }}, max: 19 },
+            { category: 'Governance', score: {{ assessment.governance_score }}, max: 17 },
+            { category: 'Data & Infrastructure', score: {{ assessment.data_infrastructure_score }}, max: 20 },
+            { category: 'Organization', score: {{ assessment.organization_score }}, max: 17 }
+        ];
+
+        let gapHtml = '<ul>';
+        scores.forEach(item => {
+            const gap = item.max - item.score;
+            const status = gap <= 2 ? 'Strength' : 'Area for Improvement';
+            gapHtml += `<li>${item.category}: ${status} (Gap: ${gap.toFixed(1)})</li>`;
+        });
+        gapHtml += '</ul>';
+        gapAnalysis.innerHTML = gapHtml;
+
+        // Recommendations
+        const recommendations = document.getElementById('recommendations');
+        let recoHtml = '<ul>';
+        if ({{ assessment.strategy_score }} < 15) {
+            recoHtml += '<li>Focus on developing a comprehensive AI strategy aligned with business goals.</li>';
+        }
+        if ({{ assessment.governance_score }} < 13) {
+            recoHtml += '<li>Strengthen AI governance frameworks and ethical guidelines.</li>';
+        }
+        if ({{ assessment.data_infrastructure_score }} < 16) {
+            recoHtml += '<li>Invest in improving data quality and infrastructure to support AI initiatives.</li>';
+        }
+        if ({{ assessment.organization_score }} < 13) {
+            recoHtml += '<li>Enhance AI skills and promote a culture of innovation within the organization.</li>';
+        }
+        recoHtml += '</ul>';
+        recommendations.innerHTML = recoHtml;
+
+    } catch (error) {
+        console.error('An error occurred:', error);
+        document.getElementById('radarChart').innerHTML = 'Error loading chart: ' + error.message;
+        document.getElementById('barChart').innerHTML = 'Error loading chart: ' + error.message;
+    }
+});
+</script>
+{% endblock %}
